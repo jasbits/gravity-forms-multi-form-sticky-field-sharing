@@ -47,7 +47,11 @@ Note that these two demos allow you to see multi-page single form properly captu
 
 This module was conceived, coded, documented, and tested by Jim Squires of Los Angeles, California in 2019. Dev's note: After he completed a working POC version of Shared Fields, Jim discovered 13pixlar's Sticky Form plugin while researching how to donate the Shared Fields module to the GitHub community. 13pixlar's admin interfacing code was very helpful for adding the same to the Shared Fields code.
 
-## Future Ideas
+# Developers
+
+Hidden feature: "TIME_UNIX" merge tag called `{time_unix}` which is always active for merge tag rendering events. It will replace the tag with a string of the current unix-time (seconds since epoc). This is typically used in a link's query string to help produce a unique URL, but might have other uses as well.
+
+# Future Ideas
 
 * x
 

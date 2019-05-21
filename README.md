@@ -1,8 +1,15 @@
 # Shared Fields - A WordPress / Gravity Forms Plugin 
 
-This plugin saves form field data directly into the logged in user’s meta data table on the server, and it will also pre-populate all fields of any form on any page which has a matching field name and type. 
+This Gravity Forms plugin provides a means to "share" field data amongst all forms on all pages within the same web site. Additionally all entered field values remain "sticky" in that each field's entries will remain pre-populated when rendered - including fields sharing the same Admin Label name on other pages.
 
-Additionally, all saved field entries can be used to populate any field of any type which supports merge tag substitutions (like inserting saved field entry values into HTML blocks used to create a PDF, constructing custom messages with captured entry data, or pre-loading a hidden field's default value to support "Conditional Logic" dynamics).
+The Shared Fields plugin provides this capability by saving your form field data, and replacing all custom merge tags with the associated saved values.
+
+All submitted form field data is saved via one of two possible ways: 
+
+1. Directly into the logged-in user’s meta data table on the server.
+2. Inserted into the anonymous user's global `$_SESSION` array.   
+
+This capability provides a means to pre-populate any field of any type which supports merge tag substitutions (like inserting saved field entry values into HTML blocks used to create a PDF, constructing custom messages with captured entry data, or pre-loading a hidden field's default value to support "Conditional Logic" dynamics).
 
 ## Contents
 
@@ -17,19 +24,19 @@ Summary of files in this GitHub repo:
 
 ## Requirements
 
-* Gravity Forms plugin (so far, tested with GF ver 2.4.6)
-* To function, this plugin currently requires that the website user must be logged into a WordPress user account
+* Gravity Forms plugin (so far, tested with GF ver 2.4.6 and 2.4.9)
 
 ## Description of "Multi-Form Sticky Field Sharing" plugin
 
-NOTE: There are other plugins which do not require that the user be logged in, such as 13pixlar’s gravity-forms-sticky-form plugin. 
+NOTE: There are other GF plugins which provide just the "sticky fields" feature (using the captured entries data from enabled form submissions) - such as 13pixlar’s gravity-forms-sticky-form plugin. 
 
-The key unique features this plugin provides are:
+The key unique features this "Shared Fields" plugin provides are:
 
-* Entry values are accessible within the same single multi-page form via merge tags
+* Previous page entry values are accessible for populating HTML field blocks within the same multi-page form
+* Both "Previous" and "Next" button actions in a multi-page form will save that current page's new entries
 * Entry values are accessible by other forms, even on other pages
-* Entry values are saved to the user’s database table on the server
-* Pages and PDFs can be populated with the saved user's entry values by using merge tags
+* Entry values are saved to the user’s database table on the server, or alternatively to the session array
+* The capability to create dynamically populated Web Pages and PDFs can be populated with the saved user's entry values by using merge tags
 
 ## Installation
 
@@ -41,37 +48,33 @@ The key unique features this plugin provides are:
 
 * Collect form data and use it within a website's pages.
 * Create dynamic webpages, emails and custom PDFs using captured form data.
-* Use "Conditional Logic" dynamics with form fields based on preceding field entries.
+* Use "Conditional Logic" dynamics with form fields based on preceding field or other pages' form entries.
 * Construct URLs rendered in HTML blocks or emails which incorporate saved data.
 * Share field answers with other fields on other pages, and re-use duplicated forms to capture and preserve multiple sets of data.
-* Create "Report Generator" sites with data collection forms, with data accumulating and available within the site for the life of the user's account.
+* Create "Report Generator" sites with data collection forms, with data accumulating and available within the site for the life of the user's account (or anonymous user's session).
 
-If any user invents or discovers other helpful cases, please share them with us.
+Dev's note: If any user invents or discovers other helpful cases, please share them with us.
 
 # Live Demos
 
-Two "live" demos using this plugin are available at: [wp.www-net.com](https://wp.www-net.com)
-
-NOTE: That WordPress site will auto-generate a short-lived "Demo User" account and log you in - no email or form-filling is required.
+Two "live" demos using this plugin are hosted at: [wp.www-net.com](https://wp.www-net.com)
 
 * Demo 1 - "Unit Test" demo of a multi-page single form which uses all supported field types
 * Demo 2 - User app "Dinner Menu Planner" to interactively construct and "publish" a final document page 
 
-Note: These two demos allow you to see multi-page single forms properly capturing and saving form input even if you abandon the form part-way through, they also use multiple forms on the same page. Also note you can log in and out of your demo account, and see how your progress on all the visited forms will still be populated with your last entries. 
+Note: These two demos allow you to see multi-page single forms properly capturing and saving form input even if you abandon the form part-way through, they also use multiple forms on the same page.
 
 # Note to Developers
 
 Three levels of debugging support per form is available (see docs).
 
-Forms can be "grouped" with other forms or made unique via the "shared group name" form option.
-
 Hidden feature:  A timestamp generator merge tag called `{time_unix}` is globally functional when the plugin is enabled. It will filter on all merge tag rendering events. Its action is to replace the tag with a string representation of the current Unix time (seconds since epoch). This is a useful means to provide a way of time-stamping rendered output, such as inserting into a hidden field's default value, or used in a link's query string construction for creating a "cache-busting" unique URL. Example: `http://mama.yo?date={time_unix}` 
 
 # Future Ideas
 
-* Admin option to manually delete all user meta records naned with the prefix `mfsfs_SYS_` (optionally limit scope to just a shared group name).
-* Implement a means for the form designer to enable the form user to clear all records as described for Admin option above.
-* Admin option on form settings to not require logged-in state to support saving entry data. Instead store entry data into the client browser's session cookies, rather than the user table.
+* Admin option to manually delete all user meta records named with the back-end prefix: `mfsfs_SYS_`
+* Implement a means for the form designer to enable the form user to clear all records as described for Admin option above
+* Admin option to NOT store entry data into user's database table, but instead use their session array (mimicking anonymous user handling behaviour)
 
 # Credits
 
@@ -80,4 +83,5 @@ This module was conceived, coded, documented, and tested by Jim Squires of Los A
 Dev's note: After Jim completed a working POC version of the Shared Fields code, he then discovered 13pixlar's Sticky Form plugin while researching how to package and donate the Shared Fields module to the GitHub community. 13pixlar's admin interfacing code was very helpful for adding that functionality to his Shared Fields plugin.
 
 # Changelog
+* 1.0.0-rc.4 - Additions for supporting anonymous users via session array (18MAY2019)
 * 1.0.0-rc.1 - Initial rerelease review beta (07MAY2019)

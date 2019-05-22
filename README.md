@@ -1,6 +1,6 @@
 # Shared Fields - A WordPress / Gravity Forms Plugin 
 
-This Gravity Forms plugin provides a means to "share" field data amongst all forms on all pages within the same web site. Additionally all entered field values remain "sticky" in that each field's entries will remain pre-populated when rendered - including fields sharing the same Admin Label name on other pages.
+This Gravity Forms plugin provides a means to capture, save, and "share" field data entry values amongst all forms from any page within the same web site. Additionally all entered field values remain "sticky", in that each field's entered values will remain pre-populated when a form is rendered - including fields sharing the same Admin Label name on other pages.
 
 The Shared Fields plugin provides this capability by saving your form field data, and replacing all custom merge tags with the associated saved values.
 

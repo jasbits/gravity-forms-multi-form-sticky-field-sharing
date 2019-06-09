@@ -1,0 +1,36 @@
+# Config for MFSFS WP/GF Plugin
+#  ( Intended for github.com/jasbits/gravity-forms-multi-form-sticky-field-sharing )
+# -JAS 08JUN2019
+#
+# For technical reasons, this file is *NOT* reloaded automatically when you use
+# 'bundle exec jekyll serve'. If you change this file, please restart the server process.
+
+# Site settings
+# These are used to personalize your new site. If you look in the HTML files,
+# you will see them accessed via {{ site.title }}, {{ site.email }}, and so on.
+# You can create any custom variable you would like, and they will be accessible
+# in the templates via {{ site.myvariable }}.
+
+title: Shared Fields for Gravity Forms
+
+description: >- # (From first paragraph of README.md)
+  This Gravity Forms extending plugin provides a means to capture, save, and "share" field data entry values amongst all forms from any page within the same web site. Additionally all entered field values remain "sticky" in that each field's entered values will remain pre-populated when a form is revisited - including fields sharing the same Admin Label name on other pages.  
+baseurl: "/" # the subpath of your site, e.g. /blog
+url: "https://wp.www-net.com" # the base hostname & protocol for your site, e.g. http://example.com
+github_username:  jasbits
+
+# Build settings
+markdown: kramdown
+theme: minima
+
+# Exclude from processing.
+# The following items will not be processed, by default. Create a custom list
+# to override the default setting.
+# exclude:
+#   - Gemfile
+#   - Gemfile.lock
+#   - node_modules
+#   - vendor/bundle/
+#   - vendor/cache/
+#   - vendor/gems/
+#   - vendor/ruby/

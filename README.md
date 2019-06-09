@@ -1,6 +1,6 @@
 # Shared Fields - A WordPress / Gravity Forms Plugin 
 
-This Gravity Forms plugin provides a means to capture, save, and "share" field data entry values amongst all forms from any page within the same web site. Additionally all entered field values remain "sticky", in that each field's entered values will remain pre-populated when a form is rendered - including fields sharing the same Admin Label name on other pages.
+This Gravity Forms extending plugin provides a means to capture, save, and "share" field data entry values amongst all forms from any page within the same web site. Additionally all entered field values remain "sticky" in that each field's entered values will remain pre-populated when a form is revisited - including fields sharing the same Admin Label name on other pages.
 
 The Shared Fields plugin provides this capability by saving your form field data, and replacing all custom merge tags with the associated saved values.
 
@@ -74,7 +74,8 @@ Hidden feature:  A timestamp generator merge tag called `{time_unix}` is globall
 
 * Admin option to manually delete all user meta records named with the back-end prefix: `mfsfs_SYS_`
 * Implement a means for the form designer to enable the form user to clear all records as described for Admin option above
-* Admin option to NOT store entry data into user's database table, but instead use their session array (mimicking anonymous user handling behaviour)
+* Admin option to NOT store entry data into user's database table, but instead use their session array (mimicking anonymous user handling behavior)
+* Capability to support storing entry data into the metadata of a custom post type 
 
 # Credits
 

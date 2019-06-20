@@ -50,7 +50,7 @@ title:  "Site Builder's Guide"
 <br />( note: if a field's Admin Label does NOT have the defined prefix, it will not be saved )
 
 #### Example Admin Form Settings 
-&nbsp;&nbsp;![Screen cap of Admin Form Settings for MFSFS Plug-in](/assets/imgs/doc-img-mfsfs-form_admin_settings-50d.png "MFSFS Form Admin Settings")
+&nbsp;&nbsp;![Screen cap of Admin Form Settings for MFSFS Plug-in](../assets/imgs/doc-img-mfsfs-form_admin_settings-50d.png "MFSFS Form Admin Settings")
 
 In this example we will capture and save (and make "sticky") any field with Admin Label prefixed with "demo2_" (eg. `demo2_first_name`). So for this case, defining a merge tag for use in a field would be like: `{mfsfs:demo2_first_name}`
 
@@ -65,11 +65,11 @@ Note that Debugging Levels are only active when Gravity Forms plug-in settings h
 ### Example Configuring A "Paragraph" Field for MFSFS
 For this example, the field's MFSFS form settings has its "Shared Group Name" set to `demo1_`  
 
-&nbsp;&nbsp;![Screen cap of form field - enable for MFSFS support](/assets/imgs/doc-img-mfsfs-form_eg-para-50.png "Paragraph Form Field Advance Tab")  
+&nbsp;&nbsp;![Screen cap of form field - enable for MFSFS support](../assets/imgs/doc-img-mfsfs-form_eg-para-50.png "Paragraph Form Field Advance Tab")  
 
 Then, you could display a user's text input in one or more HTML fields (for example), like this:  
 
-&nbsp;&nbsp;![Screen cap of HTML Form Settings](/assets/imgs/doc-img-mfsfs-form_eg-html-50.png "MFSFS HTML Settings")
+&nbsp;&nbsp;![Screen cap of HTML Form Settings](../assets/imgs/doc-img-mfsfs-form_eg-html-50.png "MFSFS HTML Settings")
 
 
 <p> &nbsp;<br /></p>

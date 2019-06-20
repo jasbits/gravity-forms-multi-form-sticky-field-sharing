@@ -12,6 +12,7 @@
 # in the templates via {{ site.myvariable }}.
 
 title: Shared Fields for Gravity Forms
+author: Jim Squires
 
 description: >- # (From first paragraph of README.md)
   This Gravity Forms extending plugin provides a means to capture, save, and "share" field data entry values amongst all forms from any page within the same web site. Additionally all entered field values remain "sticky" in that each field's entered values will remain pre-populated when a form is revisited - including fields sharing the same Admin Label name on other pages.  
@@ -19,18 +20,16 @@ baseurl: "/" # the subpath of your site, e.g. /blog
 url: "https://wp.www-net.com" # the base hostname & protocol for your site, e.g. http://example.com
 github_username:  jasbits
 
+header_pages: 
+  - /about.html 
+  - /index.html
+
 # Build settings
 markdown: kramdown
 theme: minima
 
-# Exclude from processing.
-# The following items will not be processed, by default. Create a custom list
-# to override the default setting.
-# exclude:
-#   - Gemfile
-#   - Gemfile.lock
-#   - node_modules
-#   - vendor/bundle/
-#   - vendor/cache/
-#   - vendor/gems/
-#   - vendor/ruby/
+exclude:
+  - misc-notes.txt
+  - Gemfile
+  - Gemfile.lock
+

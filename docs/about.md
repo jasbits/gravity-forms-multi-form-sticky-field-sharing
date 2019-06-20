@@ -1,7 +1,7 @@
 ---
 layout: page
 title: About
-permalink: /about/
+path: "/about.html"
 ---
 
 # Shared Fields - A WordPress / Gravity Forms Plugin 
@@ -19,7 +19,7 @@ This capability provides a means to pre-populate any field of any type which sup
 
 ## Contents
 
-Full GitHub repo name: jasbits/gravity-forms-multi-form-sticky-field-sharing
+Full GitHub repo name: [jasbits/gravity-forms-multi-form-sticky-field-sharing](https://github.com/jasbits/gravity-forms-multi-form-sticky-field-sharing)
 
 Summary of files in this GitHub repo:
 

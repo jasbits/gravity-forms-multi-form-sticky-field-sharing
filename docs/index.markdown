@@ -1,13 +1,14 @@
 ---
 layout: home
 title: Docs-Home
+path: "/index.html"
 ---
 
 # Documentation for "Multi-Form Sticky Field Sharing"
 ---
 ( A Gravity Forms Plug-In For WordPress Environments )
 
-## **INTRODUCTION**
+## **Introduction**
 
 This Gravity Forms plugin provides a means to capture, save, and "share" field data entry values amongst all forms from any page within the same web site. Additionally all entered field values remain "sticky" in that each field's entered values will remain pre-populated when a form is revisited - including fields sharing the same Admin Label name on other pages.
 
@@ -25,7 +26,7 @@ The Shared Fields plugin provides this capability by saving your form field data
 ---
 
 ## **Shared Fields documentation pages**
-* [MFSFS Site Builder's Guide](/docs/site-builders-guide)<br />
+* [MFSFS Site Builder's Guide](/guides/users-guide.markdown)<br />
 ( For the System Designer and Form Creator )
 
 * [MFSFS PHP Developer's Guide](/docs/php-devs-guide)<br />
@@ -37,9 +38,8 @@ The Shared Fields plugin provides this capability by saving your form field data
 * [MFSFS Live Demos](https://wp.www-net.com)<br />
 ( Hosted Interactive WP/GF Shared Fields Demos ) 
 
+* [GitHub Repo](https://github.com/jasbits/gravity-forms-multi-form-sticky-field-sharing)<br />
+( jasbits/gravity-forms-multi-form-sticky-field-sharing )
 
 <p> &nbsp;<br /></p>
 <p> &nbsp;<br /></p>
-
---- 
-Doc rev: 09JUN2019 (plugin ver: 1.0.0-rc.4)

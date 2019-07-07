@@ -1,6 +1,6 @@
 ---
-layout: home
-title: Docs-Home
+layout: page
+title: "Docs-Home"
 path: "/index.html"
 ---
 
@@ -19,7 +19,7 @@ The Shared Fields plugin provides this capability by saving your form field data
 * Saving of entry data occurs when "Back", "Next", or "Submit" buttons are clicked by user
 * Any rendered field on any page configured with an Admin Label of a previously saved field will be auto-populated
 * Any merge tag using a saved Admin Label name will be swapped with its saved value (field default value, HTML block)
-* Display of entire field Sections can be dynamically controled by using Conditional Logic and Hidden fields     
+* Display of entire field Sections can be dynamically controlled by using Conditional Logic and Hidden fields     
 
 <p> &nbsp;<br /></p>
 

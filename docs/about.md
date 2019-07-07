@@ -1,6 +1,6 @@
 ---
 layout: page
-title: About
+title: "About"
 path: "/about.html"
 ---
 
@@ -15,17 +15,19 @@ All submitted form field data is saved via one of two possible ways:
 1. Directly into the logged-in user’s meta data table on the server.
 2. Inserted into the anonymous user's global `$_SESSION` array.   
 
-This capability provides a means to pre-populate any field of any type which supports merge tag substitutions (like inserting saved field entry values into HTML blocks used to create a PDF, constructing custom messages with captured entry data, or pre-loading a hidden field's default value to support "Conditional Logic" dynamics).
+This capability provides a means to pre-populate any Standard or Advanced field of any type which supports merge tag substitutions (like inserting saved field entry values into HTML blocks used to create a PDF, constructing custom messages with captured entry data, or pre-loading a hidden field's default value to support "Conditional Logic" dynamics).
 
-## Contents
+- Full GitHub repo name: [jasbits/gravity-forms-multi-form-sticky-field-sharing](https://github.com/jasbits/gravity-forms-multi-form-sticky-field-sharing)
+- Full Documentation here: [jasbits.github.io/gravity-forms-multi-form-sticky-field-sharing](https://jasbits.github.io/gravity-forms-multi-form-sticky-field-sharing/)
 
-Full GitHub repo name: [jasbits/gravity-forms-multi-form-sticky-field-sharing](https://github.com/jasbits/gravity-forms-multi-form-sticky-field-sharing)
+## Contents of GitHub Repository
 
 Summary of files in this GitHub repo:
 
 * `.gitignore`. Used to exclude certain files from the repository.
 * `README.md`. The file that you’re currently reading.
 * A `shared-fields` directory that contains the plugin's source code and documentation.
+* A `docs` directory for the GitHub hosted doc pages for this plugin.
 * `LICENSE`. See contents for additional details (GPLv2 or later).
 
 ## Requirements
@@ -78,10 +80,13 @@ Hidden feature:  A timestamp generator merge tag called `{time_unix}` is globall
 
 # Future Ideas
 
+* Add merge tag support for populating field "Choices Labels" and their values (like Checkboxes and Radio Buttons)
 * Admin option to manually delete all user meta records named with the back-end prefix: `mfsfs_SYS_`
 * Implement a means for the form designer to enable the form user to clear all records as described for Admin option above
 * Admin option to NOT store entry data into user's database table, but instead use their session array (mimicking anonymous user handling behavior)
 * Capability to support storing entry data into the metadata of a custom post type 
+* Add support for Post and Pricing field types
+* Add way to pre-populate saved MFSFS variables with defaults
 
 # Credits
 

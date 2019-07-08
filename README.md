@@ -18,9 +18,9 @@ This capability provides a means to pre-populate any Standard or Advanced field 
 
 Summary of files in this GitHub repo:
 
-* `.gitignore`. Used to exclude certain files from the repository.
 * `README.md`. The file that you’re currently reading.
 * A `shared-fields` directory that contains the plugin's source code and documentation.
+* A `docs` directory for the GitHub hosted doc pages for this plugin.
 * `LICENSE`. See contents for additional details (GPLv2 or later).
 
 ## Requirements
@@ -61,9 +61,10 @@ Dev's note: If any user invents or discovers other helpful cases, please share t
 Two "live" demos using this plugin are hosted at: [wp.www-net.com](https://wp.www-net.com)
 
 * Demo 1 - "Unit Test" demo of a multi-page single form which uses all supported field types
-* Demo 2 - User app "Dinner Menu Planner" to interactively construct and "publish" a final document page 
+* Demo 2 - User app "Dinner Menu Planner" to interactively construct and "publish" a final document page
+* Demo 3 - Clothing Shopper With Profile (duo form sharing)
 
-Note: These two demos allow you to see multi-page single forms properly capturing and saving form input even if you abandon the form part-way through, they also use multiple forms on the same page.
+Note: These demos allow you to see multi-page single forms properly capturing and saving form input even if you abandon the form part-way through, they also use multiple forms on the same page.
 
 # Note to Developers
 

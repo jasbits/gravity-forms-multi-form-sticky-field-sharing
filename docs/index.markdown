@@ -29,11 +29,8 @@ The Shared Fields plugin provides this capability by saving your form field data
 * [MFSFS Site Builder's Guide](/guides/users-guide.markdown)<br />
 ( For the System Designer and Form Creator )
 
-* [MFSFS PHP Developer's Guide](/docs/php-devs-guide) TODO<br />
+* [MFSFS PHP Developer's Guide](/guides/devs-guide.markdown) TODO : Finish up<br />
 ( Apps, API, Hooks, etc. )
-
-* [MFSFS Quick Reference Index](/docs/ref-index) TODO<br />
-( syntax, examples, config options, etc )
 
 * [MFSFS Live Demos](https://wp.www-net.com)<br />
 ( Hosted Interactive WP/GF Shared Fields Demos ) 

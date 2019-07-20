@@ -74,7 +74,7 @@ Note: These demos allow you to see multi-page single forms properly capturing an
 
 # Note to Developers
 
-Three levels of debugging support per form is available (see docs).
+Three levels of filtered diagnostics for debug support per form is available (see docs).
 
 Hidden feature:  A timestamp generator merge tag called `{time_unix}` is globally functional when the plugin is enabled. It will filter on all merge tag rendering events. Its action is to replace the tag with a string representation of the current Unix time (seconds since epoch). This is a useful means to provide a way of time-stamping rendered output, such as inserting into a hidden field's default value, or used in a link's query string construction for creating a "cache-busting" unique URL. Example: `http://mama.yo?date={time_unix}` 
 

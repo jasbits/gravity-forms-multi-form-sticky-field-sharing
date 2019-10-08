@@ -20,7 +20,7 @@ Summary of files in this GitHub repo:
 
 * `README.md`. The file that you’re currently reading.
 * A `shared-fields` directory that contains the plugin's source code and documentation.
-* A `docs` directory for the GitHub hosted doc pages for this plugin.
+* A `docs` directory for the GitHub hosted doc pages and image files for this plugin.
 * `LICENSE`. See contents for additional details (GPLv2 or later).
 
 ## Requirements
@@ -63,6 +63,7 @@ Two "live" demos using this plugin are hosted at: [wp.www-net.com](https://wp.ww
 * Demo 1 - "Unit Test" demo of a multi-page single form which uses all supported field types
 * Demo 2 - User app "Dinner Menu Planner" to interactively construct and "publish" a final document page
 * Demo 3 - Clothing Shopper With Profile (duo form sharing)
+* Demo 4 - Clearing User's Saved Data (SF_Clear custom field)
 
 Note: These demos allow you to see multi-page single forms properly capturing and saving form input even if you abandon the form part-way through, they also use multiple forms on the same page.
 
@@ -75,8 +76,6 @@ Hidden feature:  A timestamp generator merge tag called `{time_unix}` is globall
 # Future Ideas
 
 * Add merge tag support for populating field "Choices Labels" and their values (like Checkboxes and Radio Buttons)
-* Admin option to manually delete all user meta records named with the back-end prefix: `mfsfs_SYS_`
-* Implement a means for the form designer to enable the form user to clear all records as described for Admin option above
 * Admin option to NOT store entry data into user's database table, but instead use their session array (mimicking anonymous user handling behavior)
 * Capability to support storing entry data into the metadata of a custom post type 
 * Add support for Post and Pricing field types
@@ -89,5 +88,6 @@ This module was conceived, coded, documented, and tested by Jim Squires of Los A
 Dev's note: After Jim completed a working POC version of the Shared Fields code, he then discovered 13pixlar's Sticky Form plugin while researching how to package and donate the Shared Fields module to the GitHub community. 13pixlar's admin interfacing code was very helpful for adding that functionality to his Shared Fields plugin.
 
 # Changelog
+* 1.0.0-rc.5 - Added new custom advanced field "SF_Clear" and related merge tag (08OCT2019)
 * 1.0.0-rc.4 - Additions for supporting anonymous users via session array (18MAY2019)
 * 1.0.0-rc.1 - Initial rerelease review beta (07MAY2019)

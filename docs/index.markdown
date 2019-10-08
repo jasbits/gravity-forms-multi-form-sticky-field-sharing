@@ -6,7 +6,7 @@ path: "/index.html"
 
 # Documentation for "Multi-Form Sticky Field Sharing"
 ---
-( A Gravity Forms Plug-In For WordPress Environments )
+( A Plug-In for Gravity Forms in WordPress Environments )
 
 ## **Introduction**
 

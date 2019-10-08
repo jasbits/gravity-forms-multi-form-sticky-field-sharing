@@ -10,7 +10,7 @@
  * Plugin URI:        https://github.com/jasbits/gravity-forms-multi-form-sticky-field-sharing
  * Description:       This is a <a href="http://www.gravityforms.com/" target="_blank">Gravity Form</a> plugin that enables form fields to be both "shared" and "sticky." By "shared" this means entry field data submitted from another form can be used as default input values or inserted via merge tags on other pages (see documentation and demos).
  * Author:            Jim Squires of Active Web Networks, LLC
- * Version:           1.0.0-rc.4
+ * Version:           1.0.0-rc.5
  * Author URI:        https://www-net.com
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
@@ -27,17 +27,19 @@ if (! defined('WPINC')) {
  * Current plugin version:
  * ( Ref: Semantic Versioning 2.0.0 - aka "SemVer" see: https://semver.org )
  */
-define('GRAVITY_FORMS_SHARED_FIELDS', '1.0.0-rc.4'); // Updated by -JASCoder 22JUL2019 - WP_DEBUG fixes passes 3 x demos
+define('GRAVITY_FORMS_SHARED_FIELDS', '1.0.0-rc.5'); // Updated by -JASCoder 08OCT2019 - Add field clear sticky
 
 define('MFSFS_ID', 'mfsfs_SYS_'); // This is a system level prefix used to reference database user meta values
+define('MFSFS_SPECIAL_CLEARED_COUNT', 'mfsfs_SPECIAL_clear_count'); // Used for preserving SF_Clear action metric
 define('MFSFS_FLAG', 'form_shared_fields_flag');
 define('MFSFS_DEBUG', 'form_shared_fields_debug'); // Default is 0, with 1=terse, 2=verbose, 3=noisy
 define('MFSFS_PREFIX', 'form_shared_fields_prefix');
 define('MFSFS_DEFAULT_PREFIX', 'sf1_'); // Default for prefix defining shared groups
 
 define('MFSFS_SPECIAL_TIME_UNIX', '{time_unix}'); // Supported at all times merge tag filter rendering
-define('MFSFS_SPECIAL_CLEAR_DATA', 'special_mfsfs_clear_form'); // Admin Label of field requesting purge action
+define('MFSFS_SPECIAL_CLEAR_DATA', 'special_mfsfs_clear_form'); // deprecated TODO - remove
 
+define('MFSFS_FIELD_TYPE_SF_CLEAR', 'sf_clear');
 define('MFSFS_FIELD_TYPE_PHONE', 'phone');
 define('MFSFS_FIELD_TYPE_RADIO', 'radio');
 define('MFSFS_FIELD_TYPE_CHECKBOX', 'checkbox');
@@ -57,27 +59,51 @@ define('MFSFS_FIELD_TYPE_HTML', 'html');
 // Start session for non logged in user support
 add_action('init', 'start_session', 1);
 
-function start_session()
-{
-	if (! session_id()) {
-		session_start();
-	}
-}
+// Add the (Advanced) new field "clear-sticky" for purging saved data
+add_action('gform_loaded', array(
+	'GF_SF_Add_Field_Clear_Sticky_Bootstrap',
+	'load'
+), 5);
 
 // Admin filters
 add_filter('gform_form_settings', 'mfsfs_adm_settings', 80, 2);
 add_filter('gform_pre_form_settings_save', 'mfsfs_adm_settings_save');
+add_filter('gform_tooltips', 'sf_clr_add_sf_clear_tooltips');
 
 // Application filters
 add_filter('gform_validation', 'mfsfs_save_fields');
 add_filter('gform_pre_render', 'mfsfs_load_fields', 20, 1);
 add_filter('gform_field_value', 'mfsfs_populate_fields', 10, 3); // (used only for the Advanced "List" field)
 add_filter('gform_replace_merge_tags', 'mfsfs_adjust_merge_tags', 10, 7); // (includes special case "time_unix")
+                                                                          // add_filter('gform_confirmation', 'mfsfs_adjust_confirmation', 10, 4); // (handles merge tags filtering if needed)
+
+// Added settings for new sf_clear field
+add_action('gform_field_standard_settings', 'sf_clr_standard_settings', 10, 2);
+add_action('gform_editor_js', 'sf_clr_editor_script');
 
 $GLO_field_id_refs = array(); // Used to retain reverse-reference index list of field IDs during "save" process
 $GLO_list_value_arrays = array(); // Used to retain list value arrays acquired in pre_render handling
 $GLO_hold_user_meta = array(); // Used to save repeating fetches while iterating thru an array
 $GLO_form_debug_setting = 0;
+
+/*
+ * TODO - relocate this bootstrap to proper place
+ *
+ */
+class GF_SF_Add_Field_Clear_Sticky_Bootstrap
+{
+
+	public static function load()
+	{
+		if (! method_exists('GFForms', 'include_addon_framework')) {
+			return;
+		}
+
+		require_once ('class-sfaddfieldclearsticky.php');
+
+		GFAddOn::register('SFClearStickyFieldAddOn');
+	}
+}
 
 /*
  * Swap out all "mfsfs:" flagged merge tags with availible user meta values
@@ -122,9 +148,17 @@ function mfsfs_adjust_merge_tags($text, $form)
 		$tag_list = $out[1];
 
 		foreach ($tag_list as $meta_index) {
-			$fixed_meta_index = MFSFS_ID . mfsfs_convert_str_to_wp_fmt($meta_index);
+			if ($meta_index != MFSFS_SPECIAL_CLEARED_COUNT) {
+				$fixed_meta_index = MFSFS_ID . mfsfs_convert_str_to_wp_fmt($meta_index);
+			} else {
+				$fixed_meta_index = MFSFS_SPECIAL_CLEARED_COUNT;
 
-			if (! empty($GLO_hold_user_meta[$fixed_meta_index])) {
+				if (! isset($GLO_hold_user_meta[$fixed_meta_index])) {
+					$GLO_hold_user_meta[$fixed_meta_index] = '0'; // forces str replace below
+				}
+			}
+
+			if (isset($GLO_hold_user_meta[$fixed_meta_index])) {
 				$new = $GLO_hold_user_meta[$fixed_meta_index];
 				$text = str_replace("$trg_flag$meta_index}", $new, $text);
 			} else {
@@ -146,9 +180,66 @@ function mfsfs_adjust_merge_tags($text, $form)
 	return $text;
 }
 
+/**
+ * Clear Saved Data
+ *
+ * @return integer The count of records cleared.
+ */
+function mfsfs_clear_saved_data($user_id, $form_debug, $purge_action, $trg_group)
+{
+	$rm_count = 0;
+
+	if ($purge_action == 'all') {
+		$trg_pattern = MFSFS_ID;
+	} else if ($purge_action == 'group' && ! empty($trg_group)) {
+		$trg_pattern = MFSFS_ID . $trg_group;
+	} else {
+		if ($form_debug > 0) {
+			GFCommon::log_debug("mfsfs_clear_saved_data(1) NO-OP - returning (unsuported Clear Data Action or missing target Group Name).");
+		}
+		return $rm_count;
+	}
+
+	if ($form_debug > 0) {
+		GFCommon::log_debug("mfsfs_clear_saved_data(1) envoked for user: $user_id - delete action: $purge_action ( target group = $trg_group ) target pattern: $trg_pattern");
+	}
+
+	if ($user_id > 0) {
+		$all_meta_for_user = array_map(function ($a) {
+			return $a[0];
+		}, get_user_meta($user_id));
+
+		foreach ($all_meta_for_user as $key => $val) {
+			if (strpos($key, $trg_pattern) === 0) {
+				if ($form_debug > 1) {
+					GFCommon::log_debug("mfsfs_clear_saved_data(2-user) cleared [$key] holding [$val]");
+				}
+
+				delete_user_meta($user_id, $key);
+
+				$rm_count ++;
+			}
+		}
+	} else {
+		foreach ($_SESSION as $key => $val) {
+			if (strpos($key, $trg_pattern) === 0) {
+				if ($form_debug > 1) {
+					GFCommon::log_debug("mfsfs_clear_saved_data(2-anon) cleared [$key] holding [$val]");
+				}
+
+				unset($GLOBALS[_SESSION][$key]);
+
+				$rm_count ++;
+			}
+		}
+	}
+
+	return $rm_count;
+}
+
 /*
  * Clear out all meta data
- * TODO Add more granular filtering like on the group_name, age, etc.
+ * TODO deprecate this - ( see mfsfs_clear_saved_data() )
  */
 function mfsfs_clear_all_meta($user_id, $form_debug, $form_group, $trg_field)
 {
@@ -201,6 +292,8 @@ function mfsfs_load_user_meta()
 		$GLO_hold_user_meta = array_filter($_SESSION, function ($a) use ($trg_prefix) {
 			return strpos($a, $trg_prefix) === 0 ? TRUE : FALSE;
 		}, ARRAY_FILTER_USE_KEY);
+
+		$GLO_hold_user_meta[MFSFS_SPECIAL_CLEARED_COUNT] = isset($_SESSION[MFSFS_SPECIAL_CLEARED_COUNT]) ? $_SESSION[MFSFS_SPECIAL_CLEARED_COUNT] : '0';
 	} else {
 		$GLO_hold_user_meta = array_map(function ($a) {
 			return $a[0];
@@ -610,10 +703,15 @@ function mfsfs_adm_settings_save($form)
 function mfsfs_save_fields($validation_result) // (called by WP-GF at validation events)
 {
 	GLOBAL $GLO_field_id_refs;
+	GLOBAL $GLO_form_debug_setting;
 
 	$form = $validation_result['form'];
 	$form_title = $form['title'];
+
+	$LOC_clear_count = 0;
+
 	$LOC_debug = isset($form[MFSFS_DEBUG]) ? $form[MFSFS_DEBUG] : 0;
+	$GLO_form_debug_setting = $LOC_debug;
 
 	if (! isset($form[MFSFS_FLAG]) || ! isset($form[MFSFS_PREFIX]) || ! $form[MFSFS_FLAG] || 1 > strlen($form[MFSFS_PREFIX])) {
 		if ($LOC_debug > 0) {
@@ -682,7 +780,11 @@ function mfsfs_save_fields($validation_result) // (called by WP-GF at validation
 			continue;
 		}
 
-		if (strpos($trgUserLab, $form[MFSFS_PREFIX]) !== 0) { // We only save fields with label prefixed with form's admin setting
+		if (isset($flds[$fldVal]['type']) && MFSFS_FIELD_TYPE_SF_CLEAR == $flds[$fldVal]['type']) {
+			if ($LOC_debug > 1) {
+				GFCommon::log_debug("mfsfs_save_fields(2) entry-scan: prefix SPECIAL CASE field type: {$flds[$fldVal]['type']}");
+			}
+		} else if (strpos($trgUserLab, $form[MFSFS_PREFIX]) !== 0) { // We only save fields with label prefixed with form's admin setting
 			if ($LOC_debug > 1) {
 				GFCommon::log_debug("mfsfs_save_fields(2) entry-scan: prefix MISS on admLab=$trgUserLab, fldVal=$fldVal");
 			}
@@ -713,6 +815,17 @@ function mfsfs_save_fields($validation_result) // (called by WP-GF at validation
 			// ---------------------- FIELD TYPES ------------------------
 			//
 			switch ($curType) {
+
+				case MFSFS_FIELD_TYPE_SF_CLEAR:
+					if ($LOC_debug > 1) {
+						$dbMsg = "label:{$flds[$fldVal]['label']} - checked: $tmp3 - option: {$flds[$fldVal]['SFClearFieldOption']} - group: {$flds[$fldVal]['SFClearFieldGroup']}";
+						GFCommon::log_debug("mfsfs_save_fields(2) case $curType: SPECIAL CASE action - $dbMsg");
+					}
+
+					if ($tmp3 === '1') {
+						$LOC_clear_count += mfsfs_clear_saved_data($LOC_UserId, $LOC_debug, $flds[$fldVal]['SFClearFieldOption'], $flds[$fldVal]['SFClearFieldGroup']);
+					}
+					break;
 
 				case MFSFS_FIELD_TYPE_TIME:
 				case MFSFS_FIELD_TYPE_MULTI_SELECT:
@@ -916,6 +1029,23 @@ function mfsfs_save_fields($validation_result) // (called by WP-GF at validation
 					break;
 			} // End Switch
 		}
+	} // (end of foreach)
+
+	// Update special SF_Clear "clear count" variable with new count, or set to zero
+	$lastCCVal = isset($all_meta_for_user[MFSFS_SPECIAL_CLEARED_COUNT]) ? $all_meta_for_user[MFSFS_SPECIAL_CLEARED_COUNT] : '0';
+
+	if ($LOC_clear_count != $lastCCVal) {
+		if ($LOC_UserId === 0) {
+			$_SESSION[MFSFS_SPECIAL_CLEARED_COUNT] = $LOC_clear_count;
+			$res = 'SESSION updated';
+		} else {
+			$res = update_user_meta($LOC_UserId, MFSFS_SPECIAL_CLEARED_COUNT, $LOC_clear_count);
+
+			if ($LOC_debug > 0) {
+				$res = mfsfs_normalize_result_flag($res);
+				GFCommon::log_debug("mfsfs_save_fields(1) SF_Clear Count: saved $LOC_clear_count - Save Returned: $res");
+			}
+		}
 	}
 
 	// ========================================================================================
@@ -956,7 +1086,13 @@ function mfsfs_get_form_handles(& $flds)
 			$GLO_field_id_refs[$key] = $rec['id'];
 		}
 
-		if (isset($rec['adminLabel']) && null != $rec['adminLabel']) {
+		if ((isset($rec['type']) && MFSFS_FIELD_TYPE_SF_CLEAR == $rec['type'])) {
+			if (empty($rec['adminLabel']) && ! empty($rec['label'])) {
+				$locFldList[$rec['label']] = $key;
+			} else if (! empty($rec['adminLabel'])) {
+				$locFldList[$rec['adminLabel']] = $key;
+			}
+		} else if (isset($rec['adminLabel']) && null != $rec['adminLabel']) {
 			$locFldList[$rec['adminLabel']] = $key; // (this is a corrective action for fields missing option in UI)
 		}
 	}
@@ -1004,4 +1140,93 @@ function mfsfs_get_fld_indx_from_entry($entryVal, $field_choices)
 	}
 
 	return false;
+}
+
+function start_session()
+{
+	if (! session_id()) {
+		session_start();
+	}
+}
+
+function sf_clr_standard_settings($position, $form_id)
+{
+	// create settings on position 25 (right after Description Box)
+	if ($position == 25) {
+		?>
+<li class="sf_clear_default field_setting"><label
+	for="field_sf_clear_default" class="section_label">   
+<?php esc_html_e( 'Set Default Condition', 'gravityforms' ); ?>
+&nbsp;
+<?php gform_tooltip( 'form_field_sf_default_value' ) ?>
+</label> <input type="checkbox" name="field_sf_clear_default"
+	id="field_sf_clear_default_value" value="1"
+	onclick="ToggleSFClearDefault();" />Pre-populate default as checked</li>
+
+<li class="sf_clear_setting field_setting"><label
+	for="field_sf_clear_option" class="section_label">   
+<?php esc_html_e( 'Clear Data Action', 'gravityforms' ); ?>
+&nbsp;
+<?php gform_tooltip( 'form_field_sf_clear_value' ) ?>
+</label> <input type="radio" name="field_sf_clear_option"
+	id="field_sf_clear_option_nothing" size="10" value="nothing"
+	onclick="SetFieldProperty('SFClearFieldOption', 'nothing');" />Do
+	Nothing &nbsp; <input type="radio" name="field_sf_clear_option"
+	id="field_sf_clear_option_all" size="10" value="all"
+	onclick="SetFieldProperty('SFClearFieldOption', 'all');" />Delete ALL
+	Saved Data &nbsp; <input type="radio" name="field_sf_clear_option"
+	id="field_sf_clear_option_group" size="10" value="group"
+	onclick="SetFieldProperty('SFClearFieldOption', 'group');" />Group ONLY
+</li>
+
+<li class="sf_clear_target_group field_setting"><label
+	for="field_sf_clear_group" class="section_label">   
+<?php esc_html_e( 'Group Name (if applicable)', 'gravityforms' ); ?>
+&nbsp;
+<?php gform_tooltip( 'form_field_sf_clear_group_name' ) ?>
+</label> <input type="text" id="field_sf_clear_target_group"
+	onkeyup="SetFieldProperty('SFClearFieldGroup', jQuery(this).val());"
+	onchange="SetFieldProperty('SFClearFieldGroup', jQuery(this).val());" />
+</li>
+
+<?php
+	}
+}
+
+function sf_clr_editor_script()
+{
+	?>
+<script type='text/javascript'>
+        // adding setting to fields of type "sf_clear"
+        fieldSettings.sf_clear += ', .sf_clear_setting';
+        fieldSettings.sf_clear += ', .sf_clear_default';
+        fieldSettings.sf_clear += ', .sf_clear_target_group';
+
+        function ToggleSFClearDefault() {
+        	field.SFClearFieldDefault == 'checked' ? SetFieldProperty('SFClearFieldDefault', '') : SetFieldProperty('SFClearFieldDefault', 'checked');
+        }
+        
+        // binding to the load field settings event to initialize the radio option
+        jQuery(document).on('gform_load_field_settings', function(event, field, form){
+        	jQuery('#field_sf_clear_target_group').val(field.SFClearFieldGroup);
+
+        	jQuery('#field_sf_clear_default_value').attr('checked', field.SFClearFieldDefault == 'checked');
+
+        	jQuery('#field_sf_clear_option_nothing').attr('checked', field.SFClearFieldOption == 'nothing');
+        	jQuery('#field_sf_clear_option_all').attr('checked', field.SFClearFieldOption == 'all');
+        jQuery('#field_sf_clear_option_group').attr('checked', field.SFClearFieldOption == 'group');
+        });
+    </script>
+<?php
+}
+
+function sf_clr_add_sf_clear_tooltips($tooltips)
+{
+	$tooltips['form_field_sf_default_value'] = "<h6>Configure Default Set To: 'checked'</h6>This rendered or hidden 'SF_Clear' field will be pre-populated as 'checked'. This is for the use case when your form design requires the user to have a one-click action, triggered by the form submit button. <p>NOTE: If this field is set to 'hidden', so the user will be unable to uncheck it (obviously). Take care with this powerful feature.";
+
+	$tooltips['form_field_sf_clear_value'] = "<h6>Configure Data Clearing Option</h6>The 'Delete ALL Saved Data' option will cause all MFSFS saved data to be deleted; for 'Group ONLY' option, only the data saved of a specific named group will be deleted (see Group Name option below).";
+
+	$tooltips['form_field_sf_clear_group_name'] = "<h6>Used only when above Action is set to Group ONLY</h6>Configure the Group Name targeted for data clearing. Example: <b>sf2_</b>";
+
+	return $tooltips;
 }

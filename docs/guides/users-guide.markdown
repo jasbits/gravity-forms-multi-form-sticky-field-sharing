@@ -3,9 +3,24 @@ layout: page
 title:  "Site Builder's Guide"
 ---
 
+## MFSFS ("Multi-Form Sticky Field Sharing")
+
+---
+
 <p> &nbsp;<br /></p>
 
-## MFSFS ("Multi-Form Sticky Field Sharing")
+### Table Of Contents
+* **[Key Concepts](#eg-key-concepts)** (details of available features)
+* **[Form Admin Settings](#eg-adm-form)** (activating MFSFS for new forms)
+* **[Example Configuring A "Paragraph" Field](#eg-para-field)**
+* **[Details for using MFSFS merge tags](#eg-details-merge-tags)** (rendering saved data)
+* **[Example of "field sharing" between forms](#eg-demo3)** (using merge tags)
+* **[Minor Note On Admin Label Naming](#note-admin-labeling)** (internal handling details)
+* **[Clear Data Custom Field](users-guide-sf-clear-field.html)** (SF_Clear Advanced field for deleting data)
+
+<p> &nbsp;<br /></p>
+
+<a name="eg-key-concepts"></a>
 
 ---
 
@@ -41,6 +56,7 @@ title:  "Site Builder's Guide"
 
 <p> &nbsp;<br /></p>
 
+[TOP](#)
 <a name="eg-adm-form"></a>
 
 ---
@@ -60,6 +76,7 @@ Note that Debugging Levels are only active when Gravity Forms plugin settings ha
 
 <p> &nbsp;<br /></p>
 
+[TOP](#)
 <a name="eg-para-field"></a>
 
 ---
@@ -76,6 +93,7 @@ Note how the merge tag's reference to the saved field's input value does not qui
 
 <p> &nbsp;<br /></p>
 
+[TOP](#)
 <a name="eg-details-merge-tags"></a>
 
 ---
@@ -94,6 +112,7 @@ Below are a few example use cases which should help to better conceptualize the 
 
 <p> &nbsp;<br /></p>
 
+[TOP](#)
 <a name="eg-demo3"></a>
 
 ---
@@ -122,22 +141,15 @@ As you can see, the MFSFS plugin is providing an easy way to capture, save, and 
 
 <p> &nbsp;<br /></p>
 
+[TOP](#)
 <a name="note-admin-labeling"></a>
 
 ---
 ### Minor Note On Admin Label Naming 
 Internally, MFSFS saves and retrieves enabled field values by referencing the field's Admin Label. It requires using underscores ( `_` ) for separators. Should you include spaces and dashes in your field's Admin Labels, MFSFS will internally convert them all to underscores. This is generally only interesting to someone using PHP to acquire or change a field's saved data. However, you **could** cause a collision issue if you tried to have two fields with same Group Name like `demo5_My Book` and `demo5_My-Book` - this would have MFSFS treating them both as if they were the same record.
 
-
-
-
-
-
-
-
 <p> &nbsp;<br /></p>
 
-End of this doc.
-
+[TOP](#)
 
 <p> &nbsp;<br /></p>
